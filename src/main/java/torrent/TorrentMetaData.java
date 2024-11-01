@@ -3,15 +3,18 @@ package torrent;
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.Type;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Torrent {
+public class TorrentMetaData {
     private String trackerUrl;
     private long length;
     private byte[] infoHash;
@@ -19,7 +22,10 @@ public class Torrent {
     private long pieceLength;
     private List<String> pieceHashes;
 
-    public Torrent(byte[] torrentMetaInfoBytes) throws NoSuchAlgorithmException {
+    public TorrentMetaData(String torrentMetadataFileName) throws NoSuchAlgorithmException, IOException {
+        File torrentFile = new File(torrentMetadataFileName);
+        byte[] torrentMetaInfoBytes = Files.readAllBytes(torrentFile.toPath());
+
         Bencode bencode = new Bencode(true);
 
         Map<String, Object> metaInfo = bencode.decode(torrentMetaInfoBytes, Type.DICTIONARY);

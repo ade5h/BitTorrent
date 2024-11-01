@@ -1,7 +1,7 @@
 package downloader;
 
 import peer.PeerMessageService;
-import torrent.Torrent;
+import torrent.TorrentMetaData;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -14,10 +14,10 @@ public class PeerWorkerService implements Runnable {
     private CountDownLatch completionLatch;
     private String peerAddress;
 
-    public PeerWorkerService(String peerAddress, Torrent torrent, BlockingQueue<Integer> piecesQueue, CountDownLatch completionLatch) throws IOException {
+    public PeerWorkerService(String peerAddress, TorrentMetaData torrentMetaData, BlockingQueue<Integer> piecesQueue, CountDownLatch completionLatch) throws IOException {
         this.peerAddress = peerAddress;
         this.piecesQueue = piecesQueue;
-        this.peerMessageService = new PeerMessageService(torrent, peerAddress);
+        this.peerMessageService = new PeerMessageService(torrentMetaData, peerAddress);
         this.completionLatch = completionLatch;
 
         peerMessageService.establishConnection();

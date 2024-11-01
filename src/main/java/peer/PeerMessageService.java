@@ -1,6 +1,6 @@
 package peer;
 
-import torrent.Torrent;
+import torrent.TorrentMetaData;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.security.NoSuchAlgorithmException;
 
 public class PeerMessageService {
     private static final int BLOCK_LENGTH = 16 * 1024;
-    private final Torrent torrent;
+    private final TorrentMetaData torrentMetaData;
     private final TCPClient tcpClient;
 
-    public PeerMessageService(Torrent torrent, String ipAddressAndPort) throws IOException {
-        this.torrent = torrent;
+    public PeerMessageService(TorrentMetaData torrentMetaData, String ipAddressAndPort) throws IOException {
+        this.torrentMetaData = torrentMetaData;
 
         String[] iPAddressParts = ipAddressAndPort.split(":");
         String peerIp = iPAddressParts[0];
@@ -22,7 +22,7 @@ public class PeerMessageService {
     }
 
     public PeerHandshakeDTO connectWithPeer() throws IOException {
-        PeerHandshakeDTO peerHandshakeDTO = new PeerHandshakeDTO(new byte[20], torrent.getInfoHash());
+        PeerHandshakeDTO peerHandshakeDTO = new PeerHandshakeDTO(new byte[20], torrentMetaData.getInfoHash());
 
         tcpClient.sendBytes(peerHandshakeDTO.getBytes());
         byte[] response = new byte[68];
@@ -45,7 +45,7 @@ public class PeerMessageService {
         // Step 3: Receive piece
         byte[] piece = receivePiece(pieceIndex);
 
-        if(!torrent.getPieceHashes().get(pieceIndex).equals(Torrent.byteArrayToHexaDecimal(Torrent.hashTheByteArray(piece)))) {
+        if(!torrentMetaData.getPieceHashes().get(pieceIndex).equals(TorrentMetaData.byteArrayToHexaDecimal(TorrentMetaData.hashTheByteArray(piece)))) {
             throw new IllegalStateException("Piece hash does not match");
         }
 
@@ -56,7 +56,7 @@ public class PeerMessageService {
     }
 
     private byte[] receivePiece(int pieceIndex) throws IOException {
-        int lenOfCurrentPiece = (int) Math.min(torrent.getPieceLength(), torrent.getLength() - (pieceIndex*torrent.getPieceLength()));
+        int lenOfCurrentPiece = (int) Math.min(torrentMetaData.getPieceLength(), torrentMetaData.getLength() - (pieceIndex* torrentMetaData.getPieceLength()));
         byte[] piece = new byte[lenOfCurrentPiece];
         ByteBuffer pieceByteBuffer = ByteBuffer.wrap(piece);
 
@@ -122,7 +122,7 @@ public class PeerMessageService {
     }
 
     private void performHandshake() throws IOException {
-        PeerHandshakeDTO peerHandshakeDTO = new PeerHandshakeDTO(new byte[20], torrent.getInfoHash());
+        PeerHandshakeDTO peerHandshakeDTO = new PeerHandshakeDTO(new byte[20], torrentMetaData.getInfoHash());
 
         tcpClient.sendBytes(peerHandshakeDTO.getBytes());
         byte[] response = new byte[68];

@@ -2,7 +2,7 @@ package tracker;
 
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.Type;
-import torrent.Torrent;
+import torrent.TorrentMetaData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -13,18 +13,18 @@ public class TrackerService {
     private static final String PORT_NUMBER = "6881";
     private static final String MY_PEER_ID = "7A3F8C2E1B9D5A4F6E0C2D8B3A1F9E7C5D4B6A2C";
 
-    public List<String> getPeers(Torrent torrent) {
+    public List<String> getPeers(TorrentMetaData torrentMetaData) {
         TrackerDTO trackerDTO = new TrackerDTO.Builder()
-                .info_hash(UrlEncode(Torrent.byteArrayToHexaDecimal(torrent.getInfoHash())))
+                .info_hash(UrlEncode(TorrentMetaData.byteArrayToHexaDecimal(torrentMetaData.getInfoHash())))
                 .peer_id(UrlEncode(MY_PEER_ID))
                 .port(PORT_NUMBER)
                 .uploaded("0")
                 .downloaded("0")
-                .left(Long.toString(torrent.getLength()))
+                .left(Long.toString(torrentMetaData.getLength()))
                 .compact("1")
                 .build();
 
-        byte[] response = new TrackerProxy().getPeersFromTracker(torrent.getTrackerUrl(), trackerDTO.toString());
+        byte[] response = new TrackerProxy().getPeersFromTracker(torrentMetaData.getTrackerUrl(), trackerDTO.toString());
 
         Bencode bencode = new Bencode(true);
         ByteBuffer peersByteBuffer = (ByteBuffer) bencode.decode(response, Type.DICTIONARY).get("peers");
