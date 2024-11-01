@@ -20,6 +20,8 @@ public class PeerWorkerService implements Runnable {
         this.peerMessageService = new PeerMessageService(torrentMetaData, peerAddress);
         this.completionLatch = completionLatch;
 
+        System.out.println("Worker - " + peerAddress + " | Starting the worker");
+
         peerMessageService.establishConnection();
     }
 
@@ -31,18 +33,18 @@ public class PeerWorkerService implements Runnable {
                 pieceNumber = piecesQueue.take();
 
                 String fileName = PIECE_FILE_PREFIX + pieceNumber;
-                System.out.println("Worker - " + peerAddress + " | trying to download piece: " + pieceNumber);
+                System.out.println("Worker - " + peerAddress + " | Trying to download piece: " + pieceNumber);
                 peerMessageService.downloadPiece(pieceNumber, fileName);
 
                 completionLatch.countDown();
-                System.out.println("Worker - " + peerAddress + " | finished downloading piece: " + pieceNumber);
+                System.out.println("Worker - " + peerAddress + " | Finished downloading piece: " + pieceNumber);
             }
             catch (InterruptedException ie) {
                 System.out.println("Worker - " + peerAddress + " | Closing this worker");
                 return;
             }
             catch (Exception e) {
-                System.out.println("Piece no. " + pieceNumber + "failed because of the following exception: " + e.getMessage());
+                System.out.println("Piece no. " + pieceNumber + " failed because of the following exception: " + e.getMessage());
                 e.printStackTrace();
                 assert pieceNumber != null;
                 boolean pieceAdded = piecesQueue.offer(pieceNumber);

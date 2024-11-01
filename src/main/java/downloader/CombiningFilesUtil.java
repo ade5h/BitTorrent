@@ -20,14 +20,8 @@ public class CombiningFilesUtil {
             String pieceDirectory = "tmp";
 
             List<String> pieces = findPieces(pieceDirectory);
-            System.out.println("Files will be combined in this order:");
-            for (String piece : pieces) {
-                System.out.println(piece);
-            }
 
             combineFiles(outputFile, pieces);
-            System.out.println("Files combined successfully!");
-
         } catch (IOException e) {
             System.err.println("Error combining files: " + e.getMessage());
         }
@@ -99,10 +93,8 @@ public class CombiningFilesUtil {
         for (String path : paths) {
             try {
                 Files.delete(Paths.get(path));
-                System.out.println("Deleted: " + path);
             } catch (IOException e) {
                 failedDeletions.add(path);
-                System.err.println("Failed to delete: " + path + " - " + e.getMessage());
             }
         }
 

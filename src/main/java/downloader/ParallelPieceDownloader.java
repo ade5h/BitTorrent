@@ -37,15 +37,20 @@ public class ParallelPieceDownloader {
             workersExecutorService.submit(new PeerWorkerService(peer, torrentMetaData, piecesQueue, completionLatch));
         }
 
-        // Wait for all pieces to be downloaded
+        // Wait for all pieces to be downloaded onto the /tmp directory
         boolean completed = completionLatch.await(30, TimeUnit.MINUTES);
         workersExecutorService.shutdownNow();
+
+        System.out.println("All the pieces downloaded to /tmp directory");
 
         if (!completed) {
             throw new TimeoutException("Download timed out after 30 minutes");
         }
 
+        // Combine all the pieces /tmp directory and finally save them in outputFile location
         combinePiecesAndSaveToFile(outputFile);
+
+        System.out.println("Download complete. File saved in the following location: " + outputFile);
     }
 
     private void createTempDirectory(String directoryName) {
