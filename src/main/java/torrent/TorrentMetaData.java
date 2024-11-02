@@ -45,7 +45,8 @@ public class TorrentMetaData {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Tracker URL: ").append(this.trackerUrl).append(System.lineSeparator())
+        stringBuilder.append("This torrent metadata:").append(System.lineSeparator())
+                .append("Tracker URL: ").append(this.trackerUrl).append(System.lineSeparator())
                 .append("Length: ").append(this.length).append(System.lineSeparator())
                 .append("Info Hash: ").append(byteArrayToHexaDecimal(this.infoHash)).append(System.lineSeparator())
                 .append("Piece Length: ").append(this.pieceLength).append(System.lineSeparator())
